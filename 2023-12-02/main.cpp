@@ -96,6 +96,14 @@ int main(){
     uint16_t possible_game_sum;
     possible_game_sum = 0;
 
+    uint16_t min_red;
+    uint16_t min_blue;
+    uint16_t min_green;
+
+    uint32_t game_power;
+    uint32_t total_power;
+    total_power = 0;
+
     input_file.open("input.txt", ios::in);
     if (input_file.is_open()){
         // Go line by line
@@ -113,7 +121,11 @@ int main(){
             temp_str = game_vector[1];
             game_sets = split(temp_str, ";");
             
+            // Set game parameters
             is_impossible = false;
+            min_red = 0;
+            min_blue = 0;
+            min_green = 0;
             
             for (size_t i = 0; i < game_sets.size(); i++)
             {
@@ -128,6 +140,7 @@ int main(){
                     temp_str = num_color[1];
                     if (temp_str == "blue"){
                         blues = stoi(num_color[0]);
+                        min_blue = max(min_blue, blues);
                         if (blues > max_blues)
                         {
                             is_impossible = true;
@@ -135,6 +148,7 @@ int main(){
                         
                     } else if (temp_str == "red"){
                         reds = stoi(num_color[0]);
+                        min_red = max(min_red, reds);
                         if (reds > max_reds)
                         {
                             is_impossible = true;
@@ -142,6 +156,7 @@ int main(){
                         
                     } else if (temp_str == "green"){
                         greens = stoi(num_color[0]);
+                        min_green = max(min_green, greens);
                         if (greens > max_greens)
                         {
                             is_impossible = true;
@@ -154,13 +169,11 @@ int main(){
                     << "\n\tGreens: " << greens 
                     << "\n\tBlues: " << blues 
                     << "\n\t\tImpossible: " << is_impossible << "\n";
-                if (is_impossible)
-                {
-                    // Break fast
-                    break;
-                }
                 
             }
+            game_power = min_blue * min_green * min_red;
+            cout << "Game Power: " << game_power << "\n";
+            total_power = total_power + game_power;
             if (!is_impossible) {
                 possible_game_sum = possible_game_sum + game_id;
             }
@@ -170,6 +183,7 @@ int main(){
     }
 
     cout << "\n\nSum of Possible Game IDs: " << possible_game_sum  << "\n";
+    cout << "\n\nSum of Powers: " << total_power  << "\n";
 
     return 0;
 }
