@@ -82,12 +82,15 @@ int main(){
     uint32_t check_win_num;
 
     uint32_t current_win_value;
-    uint32_t total_win_value;
+    uint32_t total_win_value = 0;
     uint32_t current_wins;
 
+    size_t scratch_index = 0;
+    size_t target_index = 0;
+    uint32_t scratch_cards[219] = {0};
+    uint32_t total_num_scratch_cards = 0;
 
-    total_win_value = 0;
-
+    // input_file.open("input.txt", ios::in);
     input_file.open("input.txt", ios::in);
     if (input_file.is_open()){
         // Go line by line
@@ -101,7 +104,7 @@ int main(){
             str_temp = split(string_list[0], "d", true)[1];
             game_id = stoi(str_temp);
 
-            cout << "\nGame: " << game_id << "\n";
+            cout << "Game: " << game_id << "\n";
 
             // Parse through the rest of the string and save winning numbers.
             str_temp = string_list[1];
@@ -110,7 +113,7 @@ int main(){
                 double_char_p0 = str_temp.at(i);
                 double_char_p1 = str_temp.at(i + 1);
                 double_char = double_char_p0 + double_char_p1;
-                cout << "\tWN " << double_char << "\n";
+                // cout << "\tWN " << double_char << "\n";
                 winning_numbers.push_back(stoi(double_char));
             }
             // Now our numbers
@@ -119,7 +122,7 @@ int main(){
                 double_char_p0 = str_temp.at(i);
                 double_char_p1 = str_temp.at(i + 1);
                 double_char = double_char_p0 + double_char_p1;
-                cout << "\tMN " << double_char << "\n";
+                // cout << "\tMN " << double_char << "\n";
                 my_numbers.push_back(stoi(double_char));
             }
 
@@ -139,21 +142,41 @@ int main(){
                 }
             }
 
-            // Convert current wins into a score.
-            current_win_value = 0;
-            if (current_wins > 0) {
-                current_win_value = 1;
-            }
-            for (size_t i = 1; i < current_wins; i++)
+            // Convert current wins into a score.            
+            for (size_t i = 0; i < current_wins; i++)
             {
-                current_win_value = 2 * current_win_value;
-            }
-            total_win_value = total_win_value + current_win_value;
+                if (i == 0)
+                {
+                    current_win_value = 1;
+                } else {
+                    current_win_value *= 2;
+                }
+                
+                // See how many of the following scratch cards
+                target_index = (scratch_index + 1) + i;
 
-            cout << "Wins = " << current_wins << ", Score: " << current_win_value << ", Total Score: " << total_win_value << "\n";
+                cout << "\t\t YY " << target_index << "\n";
+                if (target_index < 219)
+                {
+                    // Each card won gets 1 copy.
+                    scratch_cards[target_index] += 1;
+
+                    // And then they get a number of copies for each of _this_ card's copies.
+                    scratch_cards[target_index] += scratch_cards[scratch_index];
+                }
+            }
+            // Part 1 win value
+            // total_win_value = total_win_value + current_win_value;
+            total_num_scratch_cards += 1 + scratch_cards[scratch_index];
+
+
+            cout << "\tWins = " << current_wins << ", Score: " << current_win_value << ", Scratch Copies: " << scratch_cards[scratch_index] << "+1, Total Score: " << total_num_scratch_cards << "\n";
+
+            // Update scratch card index
+            scratch_index++;
         }
 
-        cout << "Total Score: " << total_win_value;
+        cout << "Total Score: " << total_num_scratch_cards;
         input_file.close();
     }
 
